@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  ATTENDANT
+}
+
+enum VehicleType {
+  CAR
+  MOTORCYCLE
+  TRUCK
+  VAN
+}
+
+enum BookingStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  MOBILE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id          String      @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String      @unique
+  password    String
+  role        Role        @default(USER)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+  bookings    Booking[]   @relation("UserBookings")
+  payments    Payment[]
+  vehicles    Vehicle[]   // Renamed for clarity
+}
+
+model Vehicle {
+  id           String         @id @default(uuid())
+  plateNumber  String         @unique
+  type         VehicleType
+  userId       String
+  user         User           @relation(fields: [userId], references: [id])
+  parkingSlots ParkingSlot[]
+  bookings     Booking[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model ParkingSlot {
+  id          String      @id @default(uuid())
+  number      String      @unique
+  floor       Int
+  isAvailable Boolean     @default(true)
+  vehicleId   String?     @unique
+  vehicle     Vehicle?    @relation(fields: [vehicleId], references: [id])
+  bookings    Booking[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Booking {
+  id            String       @id @default(uuid())
+  parkingSlotId String
+  parkingSlot   ParkingSlot  @relation(fields: [parkingSlotId], references: [id])
+  vehicleId     String
+  vehicle       Vehicle      @relation(fields: [vehicleId], references: [id])
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], name: "UserBookings")
+  startTime     DateTime     
+  endTime       DateTime?
+  status        BookingStatus @default(ACTIVE) 
+  payment       Payment?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Payment {
+  id        String         @id @default(uuid())
+  amount    Float
+  bookingId String         @unique
+  booking   Booking        @relation(fields: [bookingId], references: [id])
+  userId    String
+  user      User           @relation(fields: [userId], references: [id])
+  method    PaymentMethod
+  status    PaymentStatus  @default(PENDING)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
