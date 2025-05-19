@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authorizedAPI, unauthorizedAPI } from "@/lib/api";
 import handleApiRequest from "@/utils/handleApiRequest";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useEffect } from "react";
+import { toast } from "sonner";
 
 interface User {
    id: string;
@@ -17,16 +17,12 @@ interface LoginData {
    password: string;
 }
 
-// API call functions
 const loginUser = (userData: LoginData) => {
    return handleApiRequest(() => unauthorizedAPI.post("/auth/login", userData));
 };
 
 const registerUser = (userData: Partial<User>) => {
-   // Changed to use unauthorizedAPI since registration shouldn't require auth
-   return handleApiRequest(() =>
-      unauthorizedAPI.post("/auth/register", userData)
-   );
+   return handleApiRequest(() => unauthorizedAPI.post("/auth/register", userData));
 };
 
 const logoutUser = () => {
@@ -40,9 +36,8 @@ export const useLoginUser = () => {
    return useMutation({
       mutationFn: loginUser,
       onSuccess: (data: any) => {
-         console.log("Login successful:", data);
-         if (data && data.success) {
-            const userData = data.data.user;
+         if (data?.user && data?.token) {
+            const userData = data.user;
             setUser({
                id: userData.id,
                firstName: userData.firstName,
@@ -51,11 +46,15 @@ export const useLoginUser = () => {
                role: userData.role,
             });
             setIsAuthenticated(true);
-            return data.data;
+            toast.success("Login successful!");
+            return data;
+         } else {
+            throw new Error(data?.message || "Login failed");
          }
       },
       onError: (error: any) => {
-         console.error("Login error:", error);
+         const message = error?.data?.message || error?.message || "Login failed. Please try again.";
+         toast.error(message);
       },
    });
 };
@@ -64,12 +63,12 @@ export const useRegisterUser = () => {
    return useMutation({
       mutationFn: registerUser,
       onSuccess: (data: any) => {
-         console.log("Signup successful:", data);
-         // The login page will handle redirections
+         toast.success("Signup successful! Please log in.");
          return data;
       },
       onError: (error: any) => {
-         console.error("Signup error:", error);
+         const message = error?.data?.message || error?.message || "Signup failed. Please try again.";
+         toast.error(message);
       },
    });
 };
@@ -81,33 +80,24 @@ export const useLogoutUser = () => {
    return useMutation({
       mutationFn: logoutUser,
       onSuccess: () => {
-         // Clear authentication state
          setUser(null);
          setIsAuthenticated(false);
-
-         // Clear auth cookie
          document.cookie = "auth_token=; Max-Age=0; path=/;";
-
-         // Return success for the component to handle redirect
+         toast.success("Logged out successfully!");
          return { success: true };
       },
       onError: (error: any) => {
-         console.error("Logout error:", error);
-         // Even if API call fails, clear local state and cookie
          setUser(null);
          setIsAuthenticated(false);
          document.cookie = "auth_token=; Max-Age=0; path=/;";
-
-         // Return success for the component to handle redirect
+         toast.success("Logged out successfully!");
          return { success: true };
       },
    });
 };
 
-// New hook to check if user is authenticated with specific role
 export const useAuthCheck = (requiredRole?: string) => {
    const { user, isAuthenticated } = useAuthStore();
-
    return {
       isAuthenticated,
       user,

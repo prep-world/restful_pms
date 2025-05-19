@@ -26,6 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { log } from 'console';
 
 const AccountPage = () => {
   const { user } = useAuthStore();
@@ -315,6 +316,9 @@ const AccountPage = () => {
         return null;
     }
   };
+
+  console.log("Ntacyo nzoba",user);
+  
 
   return (
     <div className="p-6 max-w-7xl mx-auto">

@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Cookies } from "react-cookie";
 import { toast } from "sonner";
 import { useLoginUser } from "@/hooks/useAuth";
 
@@ -23,8 +21,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Loader2, LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react";
-
-const cookies = new Cookies();
 
 const formSchema = z.object({
    email: z.string().email("Please enter a valid email address"),
@@ -52,25 +48,17 @@ const LoginPage = () => {
 
    const onSubmit = async (data: FormData) => {
       setIsSubmitting(true);
-
       try {
          const response = await loginMutation.mutateAsync(data);
-         console.log("Mana wanyibutse", response.data.token);
+         if (response?.user && response?.token) {
+            document.cookie = `auth_token=${response.token}; path=/; max-age=${
+               24 * 60 * 60
+            }; SameSite=Strict; Secure`;
 
-         if (response?.success) {
-            // First set the cookie with Secure and SameSite attributes
-            document.cookie = `auth_token=${
-               response.data.token
-            }; path=/; max-age=${24 * 60 * 60}; SameSite=Strict`;
-
-            toast.success("Login successful! Redirecting...");
-
-            // Then handle redirects based on redirectUrl or user role
             if (redirectUrl) {
-               window.location.href = redirectUrl;
+               router.push(redirectUrl);
             } else {
-               // Role-based redirects
-               const userData = response.data.user;
+               const userData = response.user;
                const roleRedirects: Record<string, string> = {
                   ADMIN: "/admin",
                   COMPANY_ADMIN: "/company-admin",
@@ -78,14 +66,11 @@ const LoginPage = () => {
                };
                const redirectPath =
                   roleRedirects[userData.role as string] || "/dashboard";
-
-               window.location.href = redirectPath;
+               router.push(redirectPath);
             }
-         } else {
-            toast.error(response?.data.error?.msg || "Login failed");
          }
       } catch (error) {
-         toast.error("Something went wrong. Please try again.");
+         // Error is already handled in useLoginUser's onError
       } finally {
          setIsSubmitting(false);
       }
@@ -247,7 +232,7 @@ const LoginPage = () => {
                      />
                      <Button
                         type="submit"
-                        className="w-full h-12 font-medium bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-colors shadow-md"
+                        className="w-full h-12 font-medium bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-colors shadow-md cursor-pointer"
                         disabled={isSubmitting}
                      >
                         {isSubmitting ? (

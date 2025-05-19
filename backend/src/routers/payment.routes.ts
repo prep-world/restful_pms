@@ -7,11 +7,11 @@ import { roleMiddleware } from "../middlewares/role.middleware";
 const router = Router();
 
 // Protected routes
-router.post("/payments", authMiddleware, paymentController.createPayment);
-router.get("/payments/me", authMiddleware, paymentController.getMyPayments);
-router.get("/payments/:id", authMiddleware, paymentController.getPaymentById);
+router.post("/", authMiddleware, paymentController.createPayment);
+router.get("/me", authMiddleware, paymentController.getMyPayments);
+router.get("/:id", authMiddleware, paymentController.getPaymentById);
 router.post(
-   "/payments/:id/process",
+   "/:id/process",
    authMiddleware,
    roleMiddleware(["ADMIN", "ATTENDANT"]),
    paymentController.processPayment
@@ -19,13 +19,13 @@ router.post(
 
 // Admin-only routes
 router.get(
-   "/payments",
+   "/",
    authMiddleware,
    roleMiddleware(["ADMIN"]),
    paymentController.getAllPayments
 );
 router.post(
-   "/payments/:id/refund",
+   "/:id/refund",
    authMiddleware,
    roleMiddleware(["ADMIN"]),
    paymentController.refundPayment

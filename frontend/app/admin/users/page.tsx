@@ -9,14 +9,18 @@ import { AddUserDialog } from "@/components/user/AddUserDialog";
 // import DeleteUserDialog from "@/components/user/DeleteUserDialog";
 import { User } from "@/types";
 import EditUserDialog from "@/components/user/EditUserDialog";
-import { useGetAllUsers } from "@/hooks/useAdmin";
+import { useGetAllUsers } from "@/hooks/useUsers";
 
 
 
 const columns: ColumnDef<User>[] = [
   {
-    accessorKey: "fullName",
-    header: "Name",
+    accessorKey: "firstName",
+    header: "first Name",
+  },
+  {
+    accessorKey: "lastName",
+    header: "last Name",
   },
   {
     accessorKey: "email",

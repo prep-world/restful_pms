@@ -21,13 +21,13 @@ class AuthService {
     }
 
     // Hash password
-    const hashedPassword = hashPassword(password)
+    const hashedPassword =await hashPassword(password)
 
     // Create user
     return prisma.user.create({
       data: {
         email,
-        password: await hashedPassword,
+        password: hashedPassword,
         firstName,
         lastName,
         role: 'USER',
@@ -48,7 +48,7 @@ class AuthService {
     }
 
     // Check password
-    const isPasswordValid = comparePassword(password,user.password)
+    const isPasswordValid =await comparePassword(password,user.password)
     if (!isPasswordValid) {
       throw new UnauthorizedError('Invalid credentials');
     }
