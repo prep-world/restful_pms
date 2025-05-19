@@ -93,7 +93,7 @@
                 }
             }
         },
-        "/parking-slots": {
+        "/parking/slots": {
             "get": {
                 "summary": "Get all parking slots",
                 "tags": [
@@ -168,7 +168,7 @@
                 }
             }
         },
-        "/parking-slots/{id}": {
+        "/parking/slots/{id}": {
             "get": {
                 "summary": "Get parking slot by ID",
                 "tags": [

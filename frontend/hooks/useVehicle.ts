@@ -32,25 +32,25 @@ export interface UpdateVehicleDto {
 
 // API call functions
 const fetchMyVehicles = () => {
-   return handleApiRequest(() => authorizedAPI.get("/vehicle/me"));
+   return handleApiRequest(() => authorizedAPI.get("/vehicles/me"));
 };
 
 const fetchVehicleById = (id: string) => {
-   return handleApiRequest(() => authorizedAPI.get(`/vehicle/${id}`));
+   return handleApiRequest(() => authorizedAPI.get(`/vehicles/${id}`));
 };
 
 const createNewVehicle = (vehicleData: CreateVehicleDto) => {
-   return handleApiRequest(() => authorizedAPI.post("/vehicle", vehicleData));
+   return handleApiRequest(() => authorizedAPI.post("/vehicles", vehicleData));
 };
 
 const updateExistingVehicle = (id: string, vehicleData: UpdateVehicleDto) => {
    return handleApiRequest(() =>
-      authorizedAPI.put(`/vehicle/${id}`, vehicleData)
+      authorizedAPI.put(`/vehicles/${id}`, vehicleData)
    );
 };
 
 const deleteExistingVehicle = (id: string) => {
-   return handleApiRequest(() => authorizedAPI.delete(`/vehicle/${id}`));
+   return handleApiRequest(() => authorizedAPI.delete(`/vehicles/${id}`));
 };
 
 // React Query hooks

@@ -60,6 +60,66 @@ class ParkingService {
       });
    }
 
+   async createParkingSlot(
+      number: string,
+      floor: number,
+      isAvailable: boolean = true
+   ): Promise<ParkingSlot> {
+      //check is slot number already exists
+      const existingSlot = await prisma.parkingSlot.findUnique({
+         where: { number },
+      });
+      if (existingSlot) {
+         throw new Error("Parking slot with this number already exists");
+      }
+
+      return prisma.parkingSlot.create({
+         data: {
+            number,
+            floor,
+            isAvailable,
+         },
+      });
+   }
+
+   async createBulkParkingSlots(slots: {
+  number: string;
+  floor: number;
+  isAvailable?: boolean;
+}[]): Promise<{ count: number }> {
+  return prisma.$transaction(async (tx) => {
+    // Check for duplicate slot numbers
+    const existingNumbers = (
+      await tx.parkingSlot.findMany({
+        where: {
+          number: {
+            in: slots.map((s) => s.number),
+          },
+        },
+        select: { number: true },
+      })
+    ).map((s) => s.number);
+
+    if (existingNumbers.length > 0) {
+      throw new Error(
+        `These slot numbers already exist: ${existingNumbers.join(', ')}`
+      );
+    }
+
+    const created = await tx.parkingSlot.createMany({
+      data: slots.map((slot) => ({
+        number: slot.number,
+        floor: slot.floor,
+        isAvailable: slot.isAvailable ?? true,
+      })),
+      skipDuplicates: false,
+    });
+
+    return { count: created.count };
+  });
+}
+
+
    async extendBooking(extendData: ExtendBookingDto): Promise<Booking> {
       const { bookingId, additionalHours } = extendData;
 

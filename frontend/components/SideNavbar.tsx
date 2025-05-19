@@ -2,22 +2,43 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Nav } from "./ui/nav";
-import { ChevronRight, LayoutDashboard, Box, List, UsersIcon, Settings, LogOutIcon, Shield, Plus } from "lucide-react";
+import {
+   ChevronRight,
+   LayoutDashboard,
+   Box,
+   List,
+   UsersIcon,
+   Settings,
+   LogOutIcon,
+   Shield,
+   Plus,
+   ChevronLeft,
+   CarFront,
+} from "lucide-react";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+   Dialog,
+   DialogContent,
+   DialogDescription,
+   DialogFooter,
+   DialogHeader,
+   DialogTitle,
+   DialogTrigger,
+} from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { Cookies } from "react-cookie";
 import Link from "next/link";
 
-const cookies = new Cookies()
+const cookies = new Cookies();
 
 export default function SideNavbar() {
-   const { isCollapsed, mobileWidth, isClient, toggleSidebar } = useSidebarState();
+   const { isCollapsed, mobileWidth, isClient, toggleSidebar } =
+      useSidebarState();
    const router = useRouter();
    const [isDialogOpen, setIsDialogOpen] = useState(false);
-   
-   const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
    if (!isClient) {
       return null;
@@ -32,7 +53,7 @@ export default function SideNavbar() {
 
    return (
       <div
-         className={`sticky top-0 min-w-[80px] max-w-[240px] border-r max-h-screen px-3 pb-10 pt-6 bg-gradient-to-br from-pink-200 via-[#64A2FF] to-blue-500  flex flex-col justify-between z-40 text-white transition-all duration-300 ease-in-out
+         className={`sticky top-0 min-w-[80px] max-w-[240px] border-r max-h-screen px-3 pb-10 pt-6 bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-400   flex flex-col justify-between z-40 text-white transition-all duration-300 ease-in-out
          ${mobileWidth ? "hidden" : isCollapsed ? "w-[120px]" : "w-[270px]"}`}
       >
          {!mobileWidth && (
@@ -40,38 +61,67 @@ export default function SideNavbar() {
                <Button
                   onClick={toggleSidebar}
                   variant="secondary"
-                  className={`rounded-full bg-white hover:bg-white/90 p-2 ${isCollapsed ? "bg-main text-white hover:bg-main/90" : ""}`}
+                  className={`rounded-full bg-white hover:bg-white/90 p-2 ${
+                     isCollapsed ? "bg-main text-white hover:bg-main/90" : ""
+                  }`}
                >
-                  <ChevronRight className={`${isCollapsed ? "rotate-180" : ""}`} />
+                  <ChevronLeft
+                     className={`${isCollapsed ? "rotate-180" : ""}`}
+                  />
                </Button>
             </div>
          )}
 
-         <div className={`flex items-center justify-center flex-col gap-2 transition-all duration-300`}>
+         <div
+            className={`flex items-center justify-center flex-col gap-2 transition-all duration-300`}
+         >
             <Link href="/">TMS</Link>
-         
-           
          </div>
 
-         <Link href={'/admin/add-website'} className={`flex items-center justify-center bg-white rounded text-main hover:!bg-input transition-all duration-300 px-4 py-2.5 ${isCollapsed ? "w-[70%] mx-auto" : "space-x-3"}`}
+         <Link
+            href={"/admin/add-parking"}
+            className={`flex items-center justify-center bg-white rounded text-blue-500 hover:!bg-input transition-all duration-300 px-4 py-2.5 ${
+               isCollapsed ? "w-[70%] mx-auto" : "space-x-3"
+            }`}
          >
-            <Plus className={`w-[20px] ${isCollapsed && ''}`} />
+            <Plus className={`w-[20px] ${isCollapsed && ""}`} />
             <p className="text-sm">{!isCollapsed && "Add new website"}</p>
          </Link>
 
          <Nav
             isCollapsed={isCollapsed}
             links={[
-               { title: "Dashboard", href: "/admin", icon: LayoutDashboard, variant: "default" },
-               { title: "Websites", href: "/admin/websites", icon: Box, variant: "ghost" },
-               { title: "Users", href: "/admin/users", icon: UsersIcon, variant: "ghost" },
+               {
+                  title: "Dashboard",
+                  href: "/admin",
+                  icon: LayoutDashboard,
+                  variant: "default",
+               },
+               {
+                  title: "Parkings",
+                  href: "/admin/parkings",
+                  icon: CarFront,
+                  variant: "ghost",
+               },
+               {
+                  title: "Users",
+                  href: "/admin/users",
+                  icon: UsersIcon,
+                  variant: "ghost",
+               },
             ]}
          />
 
          <div className="flex flex-col gap-4">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog
+               open={isDialogOpen}
+               onOpenChange={setIsDialogOpen}
+            >
                <DialogTrigger asChild>
-                  <Button variant="secondary" className="flex items-center gap-2">
+                  <Button
+                     variant="secondary"
+                     className="flex items-center gap-2"
+                  >
                      <LogOutIcon className="w-5 h-5" />
                      <span>Logout</span>
                   </Button>

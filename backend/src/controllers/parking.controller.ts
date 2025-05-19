@@ -13,6 +13,33 @@ class ParkingController {
       }
    }
 
+   async createParkingSlot(req: Request, res: Response) {
+      try {
+         const { number, floor, isAvailable } = req.body;
+         const slot = await parkingService.createParkingSlot(
+            number,
+            floor,
+            isAvailable
+         );
+         res.status(201).json(slot);
+      } catch (error) {
+         res.status(400).json({ message: error.message });
+      }
+   }
+
+   async createBulkParkingSlots(req: Request, res: Response) {
+  try {
+    const { slots } = req.body;
+    if (!Array.isArray(slots)) {
+      throw new Error('Slots must be an array');
+    }
+    const result = await parkingService.createBulkParkingSlots(slots);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
    async getAvailableSlots(req: Request, res: Response) {
       try {
          const { vehicleType } = req.query;

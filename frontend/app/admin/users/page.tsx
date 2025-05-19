@@ -48,6 +48,8 @@ const columns: ColumnDef<User>[] = [
 export default function UsersPage() {
   const { data: userData, isPending: isUserPending } = useGetAllUsers();
 
+  console.log("Mana unejeje Imitima yacu",userData);
+  
   
   return (
     <div className="flex flex-col gap-5 w-full">
@@ -61,7 +63,7 @@ export default function UsersPage() {
         </div>
       ) : (
         //@ts-ignore
-        <DataTable columns={columns} data={userData?.data || []} />
+        <DataTable columns={columns} data={userData || []} />
       )}
     </div>
   );

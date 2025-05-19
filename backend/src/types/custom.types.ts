@@ -1,5 +1,12 @@
 // types/custom.types.ts
-import { IsInt, IsNotEmpty, IsDateString, IsString } from "class-validator";
+import {
+   IsInt,
+   IsNotEmpty,
+   IsDateString,
+   IsString,
+   IsBoolean,
+   IsOptional,
+} from "class-validator";
 
 export class CreateBookingDto {
    @IsString()
@@ -45,6 +52,18 @@ export class LoginDto {
 
    @IsNotEmpty()
    password: string;
+}
+
+export class CreateParkingSlotDto {
+   @IsString()
+   @IsNotEmpty()
+   number: string;
+   @IsInt()
+   @IsNotEmpty()
+   floor: number;
+   @IsBoolean()
+   @IsOptional()
+   isAvailable?: boolean;
 }
 
 export interface AuthRequest extends Request {

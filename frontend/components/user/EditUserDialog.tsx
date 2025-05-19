@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { User } from "@/types";
 import { PenBox } from "lucide-react";
-import { useUpdateUserRole } from "@/hooks/useAdmin";
+import { useUpdateUserRole } from "@/hooks/useUsers";
+
 
 type EditUserDialogProps = {
     user: User;
